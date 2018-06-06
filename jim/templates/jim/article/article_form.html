@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+    <div>
+        {% if crud_type == "new" %}
+            <form action="{% url 'jim:article-new' %}" method="POST">
+        {% elif crud_type == "edit" %}
+            <form action="{% url 'jim:article-edit' article.id %}" method="POST">
+        {% endif %}
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button type="submit">{{ button_value }}</button>
+        </form>
+    </div>
+
+{% endblock container %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+    <div>
+        <h3>{{ article.title }}</h3>
+        <small>
+            <a href="{% url 'jim:article-edit' article.id %}">編集する</a>
+        </small>
+    </div>
+
+{% endblock container %}

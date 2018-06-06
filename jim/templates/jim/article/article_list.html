@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+    <div>
+        <a href="{% url 'jim:article-new' %}">記事(のネタ)の新規作成</a>
+    </div>
+
+    <div>
+        <ul>
+            {% for article in article_list %}
+                <li>
+                    <a href="{% url 'jim:article-detail' article.id %}">{{ article.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock container %}
