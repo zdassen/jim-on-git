@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
+{% block css %}
+    <style>
+        li > a, small > a {
+            text-decoration: none;
+        }
+        li > a:hover, small > a:hover {
+            color: blue;
+        }
+    </style>
+{% endblock css %}
+
 {% block container %}
 
     <div>
@@ -7,6 +18,39 @@
         <small>
             <a href="{% url 'jim:article-edit' article.id %}">編集する</a>
         </small>
+        <small>
+            <a href="{% url 'jim:point-new' article.id %}">要点を追加する</a>
+        </small>
+    </div>
+
+    <div>
+        <h3>要点</h3>
+        <ul>
+            {% for point in article.point_set.all %}
+                <li>
+                    <a href="{% url 'jim:point-edit' article.id point.id %}">{{ point.content }}</a>
+                    <small>
+                        <a href="{% url 'jim:thought-new' article.id point.id %}">[もう一歩考える]</a>
+                    </small>
+                </li>
+                <ul>
+                    {% for thought in point.thought_set.all %}
+                        <li>
+                            <small>
+                                <a href="{% url 'jim:thought-edit' article.id point.id thought.id %}">
+                                    {% if thought.thought_type == 0 %}
+                                        [なぜなら]
+                                    {% elif thought.thought_type == 1 %}
+                                        [そうはいっても]
+                                    {% endif %}
+                                    {{ thought.content }}
+                                </a>
+                            </small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </ul>
     </div>
 
 {% endblock container %}

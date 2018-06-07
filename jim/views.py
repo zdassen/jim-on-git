@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
+from django.urls import reverse_lazy
 
 from .models import Article, Point, Thought
 
@@ -91,4 +92,111 @@ class ArticleCreateView(ArticleFormView, CreateView):
 
 class ArticleEditView(ArticleFormView, EditView):
     """記事(ネタ)の編集"""
+    pass
+
+
+class PointFormView(object):
+    """要点の新規作成/編集"""
+
+    # 対象のモデル
+    model = Point
+
+    # 編集対象のフィールド
+    fields = (
+        "content",
+    )
+
+    # 使用するテンプレート
+    template_name = "jim/point/point_form.html"
+
+    def get_context_data(self, **kwargs):
+        """埋め込み変数をセットする"""
+        context = super().get_context_data(**kwargs)
+
+        # 記事の ID をセットする
+        context["article_id"] = self.kwargs["article_id"]
+
+        return context
+
+    def form_valid(self, form):
+        """値が正常な場合の処理"""
+        form.instance.user = self.request.user
+
+        # 記事を取得する & フォームにセットする
+        article = get_object_or_404(
+            Article, pk=self.kwargs["article_id"])
+        form.instance.article = article
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """作成/編集成功時のリダイレクト先"""
+        return reverse_lazy("jim:article-detail",
+            kwargs={"pk": self.kwargs["article_id"]})
+
+
+class PointCreateView(PointFormView, CreateView):
+    """要点の新規作成"""
+    pass
+
+
+class PointEditView(PointFormView, EditView):
+    """要点の編集"""
+    pass
+
+
+class ThoughtFormView(object):
+    """思考の新規作成/編集"""
+
+    # 対象のモデル
+    model = Thought
+
+    # 編集対象のフィールド
+    fields = (
+        "thought_type",
+        "content",
+    )
+
+    # 使用するテンプレート
+    template_name = "jim/thought/thought_form.html"
+
+    def get_context_data(self, **kwargs):
+        """埋め込み変数をセットする"""
+        context = super().get_context_data(**kwargs)
+
+        # 記事の ID をセットする
+        context["article_id"] = self.kwargs["article_id"]
+
+        # 要点の ID をセットする
+        context["point_id"] = self.kwargs["point_id"]
+
+        return context
+
+    def form_valid(self, form):
+        """フォームの値が正常な場合の処理"""
+        form.instance.user = self.request.user
+
+        # 記事をセットする
+        form.instance.article = get_object_or_404(
+            Article, pk=self.kwargs["article_id"])
+
+        # 要点をセットする
+        form.instance.point = get_object_or_404(
+            Point, pk=self.kwargs["point_id"])
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """"作成/編集成功時のリダイレクト先"""
+        return reverse_lazy("jim:article-detail",
+            kwargs={"pk": self.kwargs["article_id"]})
+
+
+class ThoughtCreateView(ThoughtFormView, CreateView):
+    """思考の新規作成"""
+    pass
+
+
+class ThoughtEditView(ThoughtFormView, EditView):
+    """思考の新規作成"""
     pass
